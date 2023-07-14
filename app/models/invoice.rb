@@ -33,13 +33,13 @@ class Invoice < ApplicationRecord
     end
   end
 
-  def self.most_revenue(limit = 5)
+  def self.most_revenue(limit = 5, sorting = 'DESC')
     select("invoices.*, SUM(invoice_items.unit_price*invoice_items.quantity) AS revenue")
       .joins(:invoice_items, :transactions)
       .group(:id)
       .merge(Transaction.unscoped.successful)
       # .where(transactions: {result: "success"})
-      .order("revenue DESC")
+      .order("revenue #{sorting}")
       .limit(limit)
   end
 end
