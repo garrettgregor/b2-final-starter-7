@@ -32,4 +32,14 @@ class Invoice < ApplicationRecord
       sub_total - discount_total
     end
   end
+
+  def self.most_revenue(limit = 5)
+    select("invoices.*, SUM(invoice_items.unit_price*invoice_items.quantity) AS revenue")
+      .joins(:invoice_items, :transactions)
+      .group(:id)
+      .merge(Transaction.unscoped.successful)
+      # .where(transactions: {result: "success"})
+      .order("revenue DESC")
+      .limit(limit)
+  end
 end
